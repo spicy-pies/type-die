@@ -1,16 +1,42 @@
-# React + Vite
+# type/die
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+finally pushing it to github 🎉
 
-Currently, two official plugins are available:
+## what is it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+type/die is a browser-based typing game where words fly across the screen and you have to type them before they escape. it's kind of like the dinosaur game — simple, addictive, and perfect for when you're sitting in a waiting lobby, killing time between classes, or just need something to do with your hands.
 
-## React Compiler
+## the name
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+the name is a play on **tie-dye** — as in the fabric. type/die, tie-dye. get it? the design of the title screen was directly inspired by tie-dye colours: hot pinks, purples, cyans, oranges and greens all bleeding into each other. the gameplay screen leans more into a dark Toonami-style aesthetic to keep the words readable while you're actually trying to survive.
 
-## Expanding the ESLint configuration
+## how to play
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- a word appears on the left side of the screen and moves right
+- type it correctly before it reaches the edge or you lose a life
+- you get 3 lives
+- harder difficulties throw more words at you simultaneously and speed up over time
+- combo multipliers reward you for chaining kills
+
+## difficulty
+
+| mode | words on screen | speed |
+|------|----------------|-------|
+| easy | 1 | fast but manageable |
+| medium | 2 | faster |
+| hard | 4 | genuinely unhinged |
+
+speed also gradually increases over time on all difficulties so it never stays comfortable for too long.
+
+## built with
+
+- React + TypeScript
+- Vite
+- all inline styles, no CSS framework
+
+## run it locally
+
+```bash
+npm install
+npm run dev
+```
