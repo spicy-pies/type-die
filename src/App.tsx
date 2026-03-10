@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const WORDS = [
   "death", "chaos", "void", "doom", "glitch", "panic", "feral", "cursed",
   "unhinged", "cooked", "slay", "rizz", "yikes", "bruh", "sheesh", "bussin",
-  "delulu", "snatched", "periodt", "understood", "no cap", "lowkey", "highkey",
+  "delulu", "snatched", "periodt", "understood", "nocap", "lowkey", "highkey",
   "vibe", "ick", "rent", "broke", "deadline", "ghosted", "rejected", "yeet",
   "algorithm", "recursion", "segfault", "undefined", "null", "overflow",
   "deprecate", "kubernetes", "webpack", "typescript", "abstraction",
