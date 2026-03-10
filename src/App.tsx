@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const WORDS = [
   "death", "chaos", "void", "doom", "glitch", "panic", "feral", "cursed",
   "unhinged", "cooked", "slay", "rizz", "yikes", "bruh", "sheesh", "bussin",
-  "delulu", "snatched", "periodt", "understood", "lowkey", "highkey",
+  "delulu", "snatched", "periodt", "understood", "no cap", "lowkey", "highkey",
   "vibe", "ick", "rent", "broke", "deadline", "ghosted", "rejected", "yeet",
   "algorithm", "recursion", "segfault", "undefined", "null", "overflow",
   "deprecate", "kubernetes", "webpack", "typescript", "abstraction",
@@ -19,7 +19,6 @@ const DIFF_CONFIG = {
 };
 
 type Difficulty = "easy" | "medium" | "hard";
-type WordMode = "single" | "double" | "chaos"; // kept for TS compat, unused
 
 interface WordEntry {
   id: number;
@@ -34,11 +33,15 @@ function getRandomWord(): string {
   return WORDS[Math.floor(Math.random() * WORDS.length)];
 }
 
-function getRandomY(): number {
+const LANES = [15, 28, 41, 54, 67, 80];
+
+function getRandomY(occupiedLanes: number[]): number {
   // spread words across vertical lanes to avoid overlap
-  const lanes = [20, 35, 50, 65, 80];
-  return lanes[Math.floor(Math.random() * lanes.length)];
+  const available = LANES.filter(l => !occupiedLanes.includes(l));
+  const pool = available.length > 0 ? available : LANES;
+  return pool[Math.floor(Math.random() * pool.length)];
 }
+
 
 export default function TypeDie() {
   const [gameState, setGameState] = useState<"idle" | "playing" | "dead">("idle");
@@ -52,9 +55,19 @@ export default function TypeDie() {
   const [lives, setLives] = useState(3);
   const [glitchTitle, setGlitchTitle] = useState(false);
   const [combo, setCombo] = useState(0);
+  const [apiWords, setApiWords] = useState<string[]>([]);
+  const [wordPoolReady, setWordPoolReady] = useState(false);
 
   const animRef = useRef<number | null>(null);
   const gameStartTime = useRef<number>(0);
+
+  const getWordRef = useRef<() => string>(getRandomWord);
+
+  useEffect(() => {
+    const pool = [...WORDS, ...apiWords];
+    getWordRef.current = () => pool[Math.floor(Math.random() * pool.length)];
+  }, [apiWords]);
+
   const wordsRef = useRef<WordEntry[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const livesRef = useRef(3);
@@ -69,6 +82,26 @@ export default function TypeDie() {
   useEffect(() => { comboRef.current = combo; }, [combo]);
 
   useEffect(() => {
+  const fetchWords = async () => {
+    try {
+      const [longRes, medRes] = await Promise.all([
+        fetch("https://random-word-api.herokuapp.com/word?number=40&length=10"),
+        fetch("https://random-word-api.herokuapp.com/word?number=40&length=8"),
+      ]);
+      const long: string[] = longRes.ok ? await longRes.json() : [];
+      const med: string[] = medRes.ok ? await medRes.json() : [];
+      const combined = [...long, ...med].filter(w => w.length >= 7);
+      if (combined.length > 0) setApiWords(combined);
+    } catch {
+      // fall back to local words
+    } finally {
+      setWordPoolReady(true);
+    }
+  };
+  fetchWords();
+  }, []);
+
+  useEffect(() => {
     if (gameState !== "idle") return;
     const interval = setInterval(() => {
       setGlitchTitle(true);
@@ -80,38 +113,13 @@ export default function TypeDie() {
   const spawnWord = useCallback(() => {
     const newWord: WordEntry = {
       id: idCounter++,
-      text: getRandomWord(),
+      text: getWordRef.current(),
       x: 0,
-      y: getRandomY(),
+      y: getRandomY(wordsRef.current.map(w => w.y)),
     };
     wordsRef.current = [...wordsRef.current, newWord];
     setWords([...wordsRef.current]);
   }, []);
-
-  const removeWord = useCallback((id: number, died: boolean) => {
-    wordsRef.current = wordsRef.current.filter(w => w.id !== id);
-    setWords([...wordsRef.current]);
-
-    if (died) {
-      comboRef.current = 0;
-      setCombo(0);
-      const newLives = livesRef.current - 1;
-      livesRef.current = newLives;
-      setLives(newLives);
-      if (newLives <= 0) {
-        setGameState("dead");
-        if (animRef.current) cancelAnimationFrame(animRef.current);
-        setHighScore(h => Math.max(h, scoreRef.current));
-        return;
-      }
-      setShake(true);
-      setTimeout(() => setShake(false), 600);
-      spawnWord();
-    } else {
-      // killed — spawn a replacement
-      spawnWord();
-    }
-  }, [spawnWord]);
 
   useEffect(() => {
     if (gameState !== "playing") return;
@@ -152,9 +160,9 @@ export default function TypeDie() {
 
         const respawned = escaped.map(() => ({
           id: idCounter++,
-          text: getRandomWord(),
+          text: getWordRef.current(),
           x: 0,
-          y: getRandomY(),
+          y: getRandomY(surviving.map(w => w.y))
         }));
         wordsRef.current = [...surviving, ...respawned];
       } else {
@@ -163,11 +171,12 @@ export default function TypeDie() {
 
       // top up to target word count
       while (wordsRef.current.length < cfg.wordCount) {
+       const occupiedLanes = wordsRef.current.map(w => w.y);
         wordsRef.current = [...wordsRef.current, {
           id: idCounter++,
-          text: getRandomWord(),
+          text: getWordRef.current(),
           x: 0,
-          y: getRandomY(),
+          y: getRandomY(occupiedLanes),
         }];
       }
 
@@ -194,7 +203,8 @@ export default function TypeDie() {
     const cfg = DIFF_CONFIG[difficulty];
     const initial: WordEntry[] = [];
     for (let i = 0; i < cfg.wordCount; i++) {
-      initial.push({ id: idCounter++, text: getRandomWord(), x: i * 80, y: getRandomY() });
+      const occupiedLanes = initial.map(w => w.y);
+      initial.push({ id: idCounter++, text: getWordRef.current(), x: i * 80, y: getRandomY(occupiedLanes) });
     }
     wordsRef.current = initial;
     setWords(initial);
