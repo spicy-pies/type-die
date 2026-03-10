@@ -4,7 +4,7 @@ finally pushing it to github 🎉
 
 ## what is it
 
-type/die is a browser-based typing game where words fly across the screen and you have to type them before they escape. it's kind of like the dinosaur game — simple, addictive, and perfect for when you're sitting in a waiting lobby, killing time between classes, or just need something to do with your hands.
+type/die is a browser-based typing game where words fly across the screen and you have to type them before they escape. it's kind of like the no internet dinosaur game — simple, addictive, and perfect for when you're sitting in a waiting lobby, killing time between classes, or just need something to do with your hands.
 
 ## the name
 
@@ -32,7 +32,7 @@ speed also gradually increases over time on all difficulties so it never stays c
 
 - React + TypeScript
 - Vite
-- all inline styles, no CSS framework
+- all inline styles
 
 ## run it locally
 
