@@ -415,7 +415,7 @@ export default function TypeDie() {
           }}
             onMouseEnter={e => { e.currentTarget.style.background = "#00ffff11"; e.currentTarget.style.boxShadow = "0 0 60px #00ffff66, inset 0 0 40px #00ffff22"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.boxShadow = "0 0 30px #00ffff33, inset 0 0 30px #00ffff0a"; }}
-          >JACK IN</button>
+          >START GAME</button>
 
           {highScore > 0 && (
             <p style={{ color: "#aa88dd", fontSize: 11, letterSpacing: "0.35em", margin: 0, textShadow: "0 0 10px #7700ff66" }}>
@@ -615,7 +615,7 @@ export default function TypeDie() {
             color: "transparent", WebkitTextStroke: "2px #ff2266",
             textShadow: "0 0 40px #ff2266, 5px 0 #ff00ff, -5px 0 #ff2266",
             letterSpacing: "0.2em", animation: "glitch 2s infinite",
-          }}>FLATLINED</h2>
+          }}>YOU HAVE DIED</h2>
           <p style={{ color: "#9050cc", fontSize: 10, letterSpacing: "0.45em", margin: 0 }}>CONNECTION TERMINATED</p>
           <div style={{
             border: "1px solid #7000ff55", padding: "28px 56px",
